@@ -1,11 +1,16 @@
 package model;
 
+enum prodCategory {
+    food,   // 음식
+    alcohol // 술
+}
+
 public record Product(
         int productId,
-        String Name,
-        String Company,
+        String name,
+        prodCategory category, // 제품 유형
+        String company,
         int price,
         String expirationDate, // 유통기한
-        boolean isAdult, // 19금 물품인지
-        boolean isDisplay // 진열되어 있는지
+        boolean isAdultOnly // 19금 물품인지
 ) {}
