@@ -38,7 +38,7 @@ public class StaffDao {
             try {
                 connection.close();
             } catch (SQLException e) {
-                System.out.println("close() fail");
+                System.out.println("close() 실패");
             }
         }
         return false;
@@ -46,7 +46,7 @@ public class StaffDao {
 
     public Staff getStaff(String id, String pw){
         final String select_sql = """
-                    SELECT * FROM staff\s
+                    SELECT staffId,name FROM staff\s
                     WHERE accountId=? AND accountPw=?
                 """;
         Connection connection = null;
@@ -61,7 +61,7 @@ public class StaffDao {
                         result.getInt(1),
                         "***",
                         "***",
-                        result.getString(4)
+                        result.getString(2)
                 );
             } else {
                 return null;
@@ -74,7 +74,7 @@ public class StaffDao {
             try {
                 connection.close();
             } catch (SQLException e) {
-                System.out.println("close() fail");
+                System.out.println("close() 실패");
             }
         }
         return null;
