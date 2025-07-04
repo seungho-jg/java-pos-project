@@ -27,13 +27,11 @@ public class StaffDao {
             preparedStatement.setString(3, pw);
             preparedStatement.setString(4, name);
             final int res = preparedStatement.executeUpdate();
-            System.out.println("Insert: " + res);
             preparedStatement.close();
             return res == 1;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            System.out.println("로그인 실패");
         } finally {
             try {
                 connection.close();
@@ -69,7 +67,6 @@ public class StaffDao {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            System.out.println("로그인 실패");
         } finally {
             try {
                 connection.close();
