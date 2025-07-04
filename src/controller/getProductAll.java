@@ -25,10 +25,10 @@ public class getProductAll implements Controller {
         for (Product r : result) {
             System.out.println();
             System.out.println("ID : " + r.productId());
-            if(r.isAdult()) {
+            if(r.isAdult().equals("1")) {
                 System.out.println("[ 19세이하 제한품목 ]");
             }
-            System.out.println("( " + ProdCategory.intTocategory(r.category()) + " )");
+            System.out.println("( " + ProdCategory.intToCategory(r.category()) + " )");
             System.out.println("제품명   : " + r.name());
             System.out.println("제조사   : " + r.company());
             System.out.println("가격(원) : " + r.price());

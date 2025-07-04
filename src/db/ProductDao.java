@@ -14,7 +14,7 @@ public class ProductDao {
     static Random rand = new Random();
     static int productId = Math.abs(rand.nextInt());
 
-    public boolean insertProduct(String productName, int category, String company, int price, int expDate, String isAdult) {
+    public boolean insertProduct(Product product) {
         final String insert_sql = """
                     INSERT INTO product(productId, productName, category, company, price, expirationDate, isAdult)\s
                     VALUES(?, ?, ?, ?, ?, ?, ?)
@@ -25,12 +25,12 @@ public class ProductDao {
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_sql);
             preparedStatement.setInt(1, productId);
-            preparedStatement.setString(2, productName);
-            preparedStatement.setInt(3, category);
-            preparedStatement.setString(4, company);
-            preparedStatement.setInt(5, price);
-            preparedStatement.setInt(6, expDate);
-            preparedStatement.setString(7, isAdult);
+            preparedStatement.setString(2, product.name());
+            preparedStatement.setInt(3, product.category());
+            preparedStatement.setString(4, product.company());
+            preparedStatement.setInt(5, product.price());
+            preparedStatement.setInt(6, product.expirationDate());
+            preparedStatement.setString(7, product.isAdult());
             final int res = preparedStatement.executeUpdate();
             System.out.println("Insert: " + res);
             preparedStatement.close();
@@ -67,7 +67,7 @@ public class ProductDao {
                 String company = result.getString(4);
                 int price = result.getInt(5);
                 int expDate = result.getInt(6);
-                boolean isAdultOnly = result.getString(7).equals("1");
+                String isAdultOnly = result.getString(7);
                 return new Product(
                         prodId,
                         prodName,
@@ -112,7 +112,7 @@ public class ProductDao {
                                 result.getString(4),
                                 result.getInt(5),
                                 result.getInt(6),
-                                result.getString(7).equals("1")
+                                result.getString(7)
                         )
                 );
             }

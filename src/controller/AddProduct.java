@@ -1,6 +1,7 @@
 package controller;
 
 import model.ProdCategory;
+import model.Product;
 import service.ProductService;
 
 import java.util.Scanner;
@@ -39,7 +40,7 @@ public class AddProduct implements Controller {
             isAdult = true;
             System.out.println("++19세 제한으로 설정되었습니다.++");
         }
-        boolean insetResult = productService.addProduct(prodName, category, company, price, expDate, isAdult);
+        boolean insetResult = productService.addProduct(new Product(0, prodName, category, company, price, expDate, isAdult ? "1" : "0"));
         if (insetResult) {
             System.out.println("제품등록에 성공했습니다.");
         } else {

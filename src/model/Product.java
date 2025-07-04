@@ -7,5 +7,5 @@ public record Product(
         String company,
         int price,
         int expirationDate, // 유통기한
-        boolean isAdult // 19금 물품인지
+        String isAdult // 19금 물품인지
 ) {}

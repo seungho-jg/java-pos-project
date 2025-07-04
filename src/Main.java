@@ -1,15 +1,24 @@
 import controller.*;
 import db.ConnectionManager;
+import db.ProductDao;
 import service.ProductService;
 import service.StaffService;
+import service.StoreService;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         ConnectionManager.driverLoad(); // 드라이버 로드
-        StaffService staffService = new StaffService(); // StaffService 생성
-        ProductService productService = new ProductService(); // ProductService 생성
+        /* DAO 생성 */
+        ProductDao productDao = new ProductDao();
+
+        /* Service 생성 & DAO 주입 */
+        StaffService staffService = new StaffService();
+        ProductService productService = new ProductService(productDao);
+        StoreService StoreService = new StoreService();
+
+        /* Scanner 생성 */
         Scanner scanner = new Scanner(System.in);
 
         boolean isLoggedIn = false;
@@ -25,7 +34,9 @@ public class Main {
                 System.out.println("7. 상품주문");  // 상품주문 -> inventory
                 System.out.println("============");
                 System.out.println("0. 종료(퇴근하기)");
+
                 int choice = Integer.parseInt(scanner.nextLine());
+
                 switch (choice){
                     case 0:
                         System.exit(0);

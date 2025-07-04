@@ -16,7 +16,7 @@ public enum ProdCategory {
         return 0; // 해당되는게 없다면 0 리턴
     }
 
-    public static ProdCategory intTocategory(int num) {
+    public static ProdCategory intToCategory(int num) {
         switch (num) {
             case 1 -> {
                 return ProdCategory.food;

@@ -8,12 +8,12 @@ import java.util.ArrayList;
 public class ProductService {
     ProductDao productDao = null;
 
-    public ProductService() {
-        productDao = new ProductDao();
+    public ProductService(ProductDao productDao) {
+        this.productDao = productDao;
     }
 
-    public boolean addProduct(String prodName, int category, String company, int price, int expDate, boolean isAdultOnly) {
-        return productDao.insertProduct(prodName, category, company, price, expDate, isAdultOnly ? "1" : "0");
+    public boolean addProduct(Product product) {
+        return productDao.insertProduct(product);
     }
 
     public ArrayList<Product> showProductAll(){
