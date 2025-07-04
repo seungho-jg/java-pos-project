@@ -1,4 +1,6 @@
+import controller.AddProduct;
 import db.ConnectionManager;
+import service.ProductService;
 import service.StaffService;
 
 import java.util.Scanner;
@@ -7,7 +9,8 @@ public class Main {
     public static void main(String[] args) {
         ConnectionManager.driverLoad(); // 드라이버 로드
         StaffService staffService = new StaffService(); // 서비스객체 생성
-        Scanner sc = new Scanner(System.in);
+        ProductService productService = new ProductService();
+        Scanner scanner = new Scanner(System.in);
 
         boolean isLoggedIn = false;
 
@@ -19,19 +22,23 @@ public class Main {
                 System.out.println("3. 제품등록");
                 System.out.println("4. 제품주문");
                 System.out.println("0. 종료(퇴근하기)");
-                int choice = Integer.parseInt(sc.nextLine());
+                int choice = Integer.parseInt(scanner.nextLine());
                 switch (choice){
                     case 0:
                         System.exit(0);
                         break;
                     case 1:
                         System.out.println("hi");
+                        break;
+                    case 3:
+                        new AddProduct(scanner, productService).run();
+                        break;
                 }
             } else {
                 System.out.print("아이디 입력: ");
-                String id = sc.nextLine();
+                String id = scanner.nextLine();
                 System.out.print("비밀번호 입력: ");
-                String pw = sc.nextLine();
+                String pw = scanner.nextLine();
                 String name = staffService.login(id, pw);
                 if (!name.isEmpty()){
                     isLoggedIn = true;
