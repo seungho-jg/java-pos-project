@@ -1,24 +1,35 @@
 import controller.*;
-import db.ConnectionManager;
+import db.*;
 import service.ProductService;
 import service.StaffService;
+import service.StoreService;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         ConnectionManager.driverLoad(); // 드라이버 로드
-        StaffService staffService = new StaffService(); // StaffService 생성
-        ProductService productService = new ProductService(); // ProductService 생성
+        /* Dao 객체 생성 */
+        StaffDao staffDao = new StaffDao();
+        ProductDao productDao = new ProductDao();
+        StoreDao storeDao = new StoreDao();
+        InventoryDao inventoryDao = new InventoryDao();
+        OrderDao orderDao = new OrderDao();
+
+        /* 서비스에 Dao 주입 */
+        StaffService staffService = new StaffService(staffDao);
+        ProductService productService = new ProductService(productDao);
+        StoreService storeService = new StoreService(productDao, storeDao, orderDao, inventoryDao);
         Scanner scanner = new Scanner(System.in);
 
-        boolean isLoggedIn = false;
+        boolean isLoggedIn = true;
 
         while (true) {
             if (isLoggedIn) {
                 System.out.println("== 메뉴선택 ==");
                 System.out.println("1. 매장제품조회"); // 매장에 있는 제품 조회
                 System.out.println("2. 매장제품판매");
+                System.out.println("3. 잔고확인");
                 System.out.println("== 상품관련 ==");
                 System.out.println("5. 상품등록");
                 System.out.println("6. 상품목록");
@@ -37,7 +48,10 @@ public class Main {
                         new AddProduct(scanner, productService).run();
                         break;
                     case 6:
-                        new getProductAll(scanner, productService).run();
+                        new GetProductAll(scanner, productService).run();
+                        break;
+                    case 7:
+                        new StockProduct(scanner, storeService).run();
                         break;
                 }
             } else {
