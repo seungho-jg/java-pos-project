@@ -41,6 +41,8 @@ public class Main {
                     case 0:
                         System.exit(0);
                         break;
+                    case 1:
+                        new GetStockAll(scanner, storeService).run();
                     case 2:
                         System.out.println("2");
                         break;

@@ -49,14 +49,68 @@ public class InventoryDao {
         }
     }
 
+    public ArrayList<InventoryDetail> getInventoryDetail() {
+        ArrayList<InventoryDetail> inventoryDetails = new ArrayList<>();
+        final String select_sql = """
+                SELECT
+                    i.inventoryId,
+                    i.storeId,
+                    i.productId,
+                    p.productName,
+                    p.category,
+                    p.company,
+                    p.price,
+                    p.isAdult,
+                    i.expirationDate
+                FROM
+                    inventory i
+                JOIN
+                    product p
+                ON
+                    i.productId = p.productId
+                """;
+        Connection connection = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                InventoryDetail detail = new InventoryDetail(
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getInt(3),
+                        result.getString(4),
+                        result.getInt(5),
+                        result.getString(6),
+                        result.getInt(7),
+                        result.getString(8),
+                        result.getString(9)
+                );
+                inventoryDetails.add(detail);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("close() 실패" + e.getMessage());
+                }
+            }
+        }
+        return inventoryDetails;
+    }
+
     public ArrayList<Inventory> getInventoryAll() {
-        final String select_all_sql = "SELECT * FROM inventory";
+        final String select_sql = "SELECT * FROM inventory";
         ArrayList<Inventory> inventories = new ArrayList<>();
         Connection connection = null;
 
         try {
             connection = ConnectionManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(select_all_sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
             ResultSet result = preparedStatement.executeQuery();
 
             while (result.next()) {

@@ -4,9 +4,11 @@ import db.InventoryDao;
 import db.ProductDao;
 import db.StoreDao;
 import db.OrderDao;
+import model.InventoryDetail;
 import model.Order;
 import model.Product;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class StoreService {
@@ -23,6 +25,14 @@ public class StoreService {
     }
 
     // 재고 확인
+    public ArrayList<InventoryDetail> showStockList() {
+        ArrayList<InventoryDetail> result = inventoryDao.getInventoryDetail();
+        if (result == null) {
+            System.out.println("조회 실패");
+            return null;
+        }
+        return result;
+    }
 
     // 품목이 존재하는지 체크
     public boolean isValidProdName(String productName) {
@@ -34,7 +44,7 @@ public class StoreService {
     public void stockProduct(String productName, int quantity){
         // 이름으로 product 검색
         Product findProd = productDao.getProductByName(productName);
-        System.out.println(findProd.name());
+
         for (int i = 0; i < quantity; i ++){
             boolean result = inventoryDao.insertInventory(storeDao.getStoreId(), findProd);
             if (result) {
