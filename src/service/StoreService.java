@@ -57,15 +57,38 @@ public class StoreService {
         return result;
     }
 
-    // 제품 이름으로 인벤토리 가져오기
-    public Inventory getInventoryByName(String name){
-        Inventory result = inventoryDao.getInventoryOneByProdId(productDao.getProductByName(name).productId(), "display");
-        if (result == null) {
+    // 제품 이름으로 인벤토리 가져오기(카트에 있는 인벤토리 제외)
+    public Inventory getInventoryByName(String name) {
+        Product product = productDao.getProductByName(name);
+        if (product == null) {
+            return null;
+        }
+        ArrayList<Inventory> candidates = inventoryDao.getInventoryListByProductId(product.productId(), "display");
+
+        if (candidates.isEmpty()) {
             System.out.println("getInventoryByName() 실패");
             return null;
         }
-        return result;
+
+        // inventory list 순회
+        for (Inventory inv : candidates) {
+            boolean found = false;
+
+            for (Cart cart : cartList) {
+                if (cart.hasInventoryId(inv.inventoryId())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                return inv;
+            }
+        }
+        return null;
+
     }
+
 
     // 물품 입고
     public void stockProduct(String productName, int quantity){
@@ -110,6 +133,7 @@ public class StoreService {
         for (Cart cart : cartList) {
             if (cart.getProductId() == product.productId()) {
                 cart.increaseQuantity();
+                cart.addInventoryId(inventory.inventoryId());
                 addSameInven = true;
             }
         }
@@ -179,22 +203,28 @@ public class StoreService {
                             "default"
                     ));
             // 재고 차감
-            inventoryDao.updateInventoryStatus(cart.getInventoryId(), "sold");
+            for (int i : cart.getInventoryIdList()){
+                System.out.println("[" +i + "]" + cart.getProductName() + "(재고차감)");
+                inventoryDao.updateInventoryStatus(i, "sold");
+            }
 
-            // 장바구니 비우기
-            cartList.clear();
 
-            // 성공
-            Orders successOrder = new Orders(
-                    0, 0, 0, totalPrice,
-                    method.equals("card") ? "1" : "0",
-                    0,
-                    "default"
-            );
-            return new OrderResult(successOrder);
         }
-        return new OrderResult("결제 실패");
-    }
+        // 장바구니 비우기
+        cartList.clear();
 
+        // 성공
+        Orders successOrder = new Orders(
+                0, 0, 0, totalPrice,
+                method.equals("card") ? "1" : "0",
+                0,
+                "default"
+        );
+        return new OrderResult(successOrder);
+    }
+    // 잔고확인
+    public int getStoreBalance() {
+        return storeDao.getBalance();
+    }
 
 }

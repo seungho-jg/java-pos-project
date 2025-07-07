@@ -140,6 +140,45 @@ public class InventoryDao {
         }
         return inventories;
     }
+    public ArrayList<Inventory> getInventoryListByProductId(int productId, String status) {
+        final String sql = """
+            SELECT inventoryId, storeId, productId, TO_CHAR(expirationDate, 'YYYY-MM-DD') AS expirationDate, status
+            FROM inventory
+            WHERE productId = ? AND status = ?
+            ORDER BY expirationDate
+        """;
+        ArrayList<Inventory> list = new ArrayList<>();
+        Connection connnection = null;
+        try {
+            connnection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connnection.prepareStatement(sql);
+            preparedStatement.setInt(1, productId);
+            preparedStatement.setString(2, status);
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                list.add(new Inventory(
+                        result.getInt("inventoryId"),
+                        result.getInt("storeId"),
+                        result.getInt("productId"),
+                        result.getString("expirationDate"),
+                        result.getString("status")
+                ));
+            }
+            result.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (connnection != null)
+                try {
+                    connnection.close();
+                } catch (SQLException e) {
+                    System.out.println("close() 실패" + e.getMessage());
+                }
+        }
+        return list;
+    }
+
     public Inventory getInventoryOneByProdId(int productId, String status) {
         final String select_sql = """
                 SELECT inventoryId, storeId, productId, TO_CHAR(expirationDate, 'YYYY-MM-DD') AS expirationDate, status\s

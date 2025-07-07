@@ -1,14 +1,16 @@
 package dto;
 
+import java.util.ArrayList;
+
 public class Cart {
-    final private int inventoryId;
+    final private ArrayList<Integer> inventoryIdList = new ArrayList<>();
     final private int productId;
     final private String productName;
     final private int price;
     private int quantity;
 
     public Cart(int inventoryId, int productId, String productName, int price, int quantity) {
-        this.inventoryId = inventoryId;
+        this.inventoryIdList.add(inventoryId);
         this.productId = productId;
         this.productName = productName;
         this.price = price;
@@ -19,8 +21,17 @@ public class Cart {
         return price;
     }
 
-    public int getInventoryId() {
-        return inventoryId;
+    public ArrayList<Integer> getInventoryIdList() {
+        return inventoryIdList;
+    }
+
+    public boolean hasInventoryId(int inventoryId) {
+        return inventoryIdList.contains(inventoryId);
+    }
+
+
+    public void addInventoryId(int inventoryId) {
+        this.inventoryIdList.add(inventoryId);
     }
 
     public int getProductId() {
