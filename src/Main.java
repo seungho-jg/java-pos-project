@@ -10,16 +10,17 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ConnectionManager.driverLoad(); // 드라이버 로드
-        LocalDate today = LocalDate.now(); // 로컬데이트 로드
+        LocalDate today = LocalDate.now(); // 로컬 데이트
         /* Dao 객체 생성 */
         StaffDao staffDao = new StaffDao();
         ProductDao productDao = new ProductDao();
         StoreDao storeDao = new StoreDao();
+        WorklogDao worklogDao = new WorklogDao();
         InventoryDao inventoryDao = new InventoryDao();
         OrdersDao ordersDao = new OrdersDao();
 
         /* 서비스에 Dao 주입 */
-        StaffService staffService = new StaffService(staffDao);
+        StaffService staffService = new StaffService(staffDao, worklogDao);
         ProductService productService = new ProductService(productDao);
         StoreService storeService = new StoreService(productDao, storeDao, ordersDao, inventoryDao, today);
         Scanner scanner = new Scanner(System.in);
