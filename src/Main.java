@@ -1,5 +1,6 @@
 import controller.*;
 import db.*;
+import model.Staff;
 import service.ProductService;
 import service.StaffService;
 import service.StoreService;
@@ -25,7 +26,9 @@ public class Main {
         StoreService storeService = new StoreService(productDao, storeDao, ordersDao, inventoryDao, today);
         Scanner scanner = new Scanner(System.in);
 
-        boolean isLoggedIn = true;
+        // 세션
+        boolean isLoggedIn = false;
+        Staff currentStaff = null;
 
         while (true) {
             if (isLoggedIn) {
@@ -44,6 +47,9 @@ public class Main {
 
                 switch (choice){
                     case 0:
+                        staffService.loggout(currentStaff.staffId());
+                        int wage = staffService.calculateWage(currentStaff.staffId());
+                        System.out.printf("사원: " + currentStaff.name() + " 일당 :  %,d원 \n", wage);
                         System.exit(0);
                         break;
                     case 1:
@@ -67,11 +73,12 @@ public class Main {
                 String id = scanner.nextLine();
                 System.out.print("비밀번호 입력: ");
                 String pw = scanner.nextLine();
-                String name = staffService.login(id, pw);
-                if (!name.isEmpty()){
+                Staff findStaff = staffService.login(id, pw);
+                if (findStaff != null){
                     isLoggedIn = true;
+                    currentStaff = findStaff;
                     System.out.println("**로그인 완료**");
-                    System.out.println("직원: " + name + "님 안녕하세요!");
+                    System.out.println("직원: " + currentStaff.name() + "님 안녕하세요!");
                     System.out.println("============");
                 }
             }

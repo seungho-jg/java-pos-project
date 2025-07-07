@@ -8,10 +8,10 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class OrdersDao {
-    Random random = new Random();
+    Random rand= new Random();
 
     public boolean insertOrder(Orders orders) {
-        int orderId = Math.abs(random.nextInt());
+        int orderId = Math.abs(rand.nextInt());
         final String insert_sql ="""
                 INSERT INTO orders(orderId, productId, price, payMethod, customerId, quantity)\s
                 VALUES(?, ?, ?, ?, ?, ?)

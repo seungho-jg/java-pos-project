@@ -8,22 +8,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class WorklogDao {
-
+    Random rand = new Random();
     // 근무시작
     public boolean insertWorkLog(int staffId, int storeId, Timestamp startDate) {
+        int orderId = Math.abs(rand.nextInt());
         final String insert_sql = """
             INSERT INTO worklog(workLogId, staffId, storeId, startDate, endDate)
-            VALUES(worklog_seq.nextval, ?, ?, ?, null)
+            VALUES(?, ?, ?, ?, null)
         """;
         Connection connection = null;
         try {
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_sql);
             preparedStatement.setInt(1, staffId);
-            preparedStatement.setInt(2, storeId);
-            preparedStatement.setTimestamp(3, startDate);
+            preparedStatement.setInt(2, staffId);
+            preparedStatement.setInt(3, storeId);
+            preparedStatement.setTimestamp(4, startDate);
             int result = preparedStatement.executeUpdate();
             preparedStatement.close();
             return result == 1;
