@@ -30,6 +30,7 @@ public class SaleProduct implements Controller{
                 OrderResult result = storeService.processSale(payMethod, cashAmount);
                 if (result.isSuccess()) {
                     System.out.println("결제가 완료되었습니다. 감사합니다!");
+                    System.out.printf("현재 잔고: %,d원%n", storeService.getStoreBalance());
                 } else {
                     System.out.println("오류: " + result.getErrorMsg());
                 }

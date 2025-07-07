@@ -36,6 +36,7 @@ public class Main {
                 System.out.println("1. 매장재고조회"); // 매장에 있는 제품 조회
                 System.out.println("2. 상품판매");
                 System.out.println("3. 잔고확인");
+                System.out.println("4. 금일매출");
                 System.out.println("5. 상품등록");
                 System.out.println("6. 상품목록");
                 System.out.println("7. 상품주문");  // 상품주문 -> inventory
@@ -56,6 +57,12 @@ public class Main {
                         break;
                     case 2:
                         new SaleProduct(scanner, storeService).run();
+                        break;
+                    case 3:
+                        new CheckBalance(storeService).run();
+                        break;
+                    case 4:
+                        new ShowTodaySales(storeService).run();
                         break;
                     case 5:
                         new AddProduct(scanner, productService).run();

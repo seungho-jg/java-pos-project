@@ -226,5 +226,13 @@ public class StoreService {
     public int getStoreBalance() {
         return storeDao.getBalance();
     }
+    // 금일 주문리스트
+    public ArrayList<Orders> getTodayOrderList() {
+        return ordersDao.getTodayOrders();
+    }
+    // 금일 주문합계
+    public int getTodaySalesTotal() {
+        return ordersDao.getTodaySalesTotal();
+    }
 
 }
