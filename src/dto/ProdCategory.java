@@ -1,4 +1,4 @@
-package model;
+package dto;
 
 public enum ProdCategory {
     food,   // 음식

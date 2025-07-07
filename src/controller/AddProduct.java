@@ -1,6 +1,6 @@
 package controller;
 
-import model.ProdCategory;
+import dto.ProdCategory;
 import model.Product;
 import service.ProductService;
 

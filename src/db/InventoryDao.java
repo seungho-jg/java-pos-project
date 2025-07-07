@@ -1,9 +1,10 @@
 package db;
 
 import model.Inventory;
-import model.InventoryCount;
-import model.InventoryDetail;
+import dto.InventoryCount;
+import dto.InventoryDetail;
 import model.Product;
+import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -83,7 +84,8 @@ public class InventoryDao {
                         result.getString(6),
                         result.getInt(7),
                         result.getString(8),
-                        result.getString(9)
+                        result.getString(9),
+                        result.getString(10)
                 );
                 inventoryDetails.add(detail);
             }
@@ -118,7 +120,8 @@ public class InventoryDao {
                         result.getInt("inventoryId"),
                         result.getInt("storeId"),
                         result.getInt("productId"),
-                        result.getString("ExpirationDate")
+                        result.getString("ExpirationDate"),
+                        result.getString("Status")
                 );
                 inventories.add(inventory);
             }
@@ -136,6 +139,48 @@ public class InventoryDao {
             }
         }
         return inventories;
+    }
+    public Inventory getInventoryOneByProdId(int productId, String status) {
+        final String select_sql = """
+                SELECT inventoryId, storeId, productId, TO_CHAR(expirationDate, 'YYYY-MM-DD') AS expirationDate, status\s
+                FROM inventory\s
+                WHERE productId = ? AND status = ?\s
+                ORDER BY expirationDate
+                """;
+        Connection connection = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
+            preparedStatement.setInt(1, productId);
+            preparedStatement.setString(2, status);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                return new Inventory(
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getInt(3),
+                        result.getString(4),
+                        result.getString(5)
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("close() 실패" + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean setInventoryStatusById(int inventoryId, String status) {
+        // 인벤토리 상태 업데이트 ( display / deliver / dispose / soldOut )
+        return false;
     }
 
     public boolean deleteInventoryById(int inventoryId) {
@@ -194,7 +239,7 @@ public class InventoryDao {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            if (connection == null) {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {

@@ -1,4 +1,4 @@
-package model;
+package dto;
 
 public record InventoryDetail(
         int inventoryId,
@@ -9,5 +9,6 @@ public record InventoryDetail(
         String company,
         int price,
         String isAdult,
-        String expirationDate
+        String expirationDate,
+        String status
 ) {}

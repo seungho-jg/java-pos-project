@@ -3,24 +3,27 @@ package service;
 import db.InventoryDao;
 import db.ProductDao;
 import db.StoreDao;
-import db.OrderDao;
+import db.OrdersDao;
+import dto.*;
 import model.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class StoreService {
     LocalDate today;
     ProductDao productDao;
     StoreDao storeDao;
-    OrderDao orderDao;
+    OrdersDao ordersDao;
     InventoryDao inventoryDao;
+    ArrayList<Cart> cartList = new ArrayList<>();
 
-    public StoreService(ProductDao productDao, StoreDao storeDao, OrderDao orderDao, InventoryDao inventoryDao, LocalDate today){
+
+    public StoreService(ProductDao productDao, StoreDao storeDao, OrdersDao ordersDao, InventoryDao inventoryDao, LocalDate today){
         this.productDao = productDao;
         this.storeDao = storeDao;
-        this.orderDao = orderDao;
+        this.ordersDao = ordersDao;
         this.inventoryDao = inventoryDao;
         this.today = today;
     }
@@ -54,10 +57,14 @@ public class StoreService {
         return result;
     }
 
-    // 품목이 존재하는지 체크
-    public boolean isValidProdName(String productName) {
-        Product result = productDao.getProductByName(productName);
-        return result != null;
+    // 제품 이름으로 인벤토리 가져오기
+    public Inventory getInventoryByName(String name){
+        Inventory result = inventoryDao.getInventoryOneByProdId(productDao.getProductByName(name).productId(), "display");
+        if (result == null) {
+            System.out.println("getInventoryByName() 실패");
+            return null;
+        }
+        return result;
     }
 
     // 물품 입고
@@ -69,7 +76,7 @@ public class StoreService {
             expDate = String.valueOf(today.plusDays(findProd.expirationDate()));
         }
 
-        for (int i = 0; i < quantity; i ++){
+        for (int i = 0; i < quantity; i++){
             boolean result = inventoryDao.insertInventory(storeDao.getStoreId(), findProd, expDate);
             if (result) {
                 System.out.println("성공");
@@ -78,13 +85,75 @@ public class StoreService {
             }
         }
     }
+    // 결제할 제품 추가: 성공(1), 19세(2), 유통기한(3), 제품없음(4)
+    public int addCart(Inventory inventory, boolean isAdult) {
+        // 제품이 없을때
+        if (inventory == null) {
+            return 4;
+        }
+        // 제품정보 가져오기
+        Product product = productDao.getProductById(inventory.productId());
 
-    // 제품 판매
-    public Order processSale(Long staffId, Map<Long, Integer> productQuantities) {
+        // 19세 제한물품일때
+        if (product.isAdult().equals("1") && !isAdult) {
+            return 2;
+        }
 
-        // 1. 새로운 도메인 객체(Order)를 생성합니다.
-        return new Order(1,1,1,1);
+        // 유통기한 처리
+        if (product.category() == 1) {
+            // 유통기한이 지났을때
+            if (today.isAfter(Date.valueOf(inventory.expirationDate()).toLocalDate())) {
+                return 3;
+            }
+        }
+        boolean isSameProduct = false;
+        for (Cart cart : cartList) {
+            if (cart.getProductId() == product.productId()) {
+                cart.increaseQuantity();
+                isSameProduct = true;
+            }
+        }
+        if (!isSameProduct) {
+            cartList.add(
+                    new Cart(
+                            inventory.productId(),
+                            product.name(),
+                            product.price(),
+                            1
+                    )
+            );
+        }
+
+        System.out.print("[");
+        for (Cart c : cartList) {
+            System.out.print(c.getProductName()+ "x" + c.getQuantity() + " ");
+        }
+        System.out.println("]");
+        return 1;
     }
 
-    //
+
+    // 제품 판매
+    public OrderResult processSale(String method) {
+        // 결제수단
+
+        for (Cart cart : cartList) {
+            ordersDao.insertOrder(
+                    new Orders(
+                            0,
+                            cart.getProductId(),
+                            0,
+                            cart.getPrice(),
+                            method.equals("card") ? "1" : "0", // 0: cash, 1: cart
+                            cart.getQuantity(),
+                            "default"
+                    )
+            );
+        }
+        // store add balance
+        // Invetory remove
+        return null;
+    }
+
+
 }

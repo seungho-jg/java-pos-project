@@ -1,16 +1,19 @@
 package controller;
 
+import service.ProductService;
 import service.StoreService;
 
 import java.util.Scanner;
 
-public class StockProduct implements Controller{
+public class AddStockProduct implements Controller{
     Scanner sc = null;
     StoreService storeService = null;
+    ProductService productService = null;
 
-    public StockProduct(Scanner sc, StoreService storeservice){
+    public AddStockProduct(Scanner sc, StoreService storeservice, ProductService productService){
         this.sc = sc;
         this.storeService = storeservice;
+        this.productService = productService;
     }
     @Override
     public void run() {
@@ -18,7 +21,7 @@ public class StockProduct implements Controller{
             System.out.print("주문할 제품이름: ");
             String prodName = sc.nextLine();
 
-            if (!storeService.isValidProdName(prodName)) {
+            if (!productService.isValidProdName(prodName)) {
                 System.out.println("해당 제품이 존재하지 않습니다.");
                 continue;
             }

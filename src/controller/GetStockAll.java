@@ -1,8 +1,7 @@
 package controller;
 
 
-import model.InventoryCount;
-import model.InventoryDetail;
+import dto.InventoryCount;
 import service.StoreService;
 
 import java.util.ArrayList;

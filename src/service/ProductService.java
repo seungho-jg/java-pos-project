@@ -16,6 +16,12 @@ public class ProductService {
         return productDao.insertProduct(product);
     }
 
+    // 품목이 존재하는지 체크
+    public boolean isValidProdName(String productName) {
+        Product result = productDao.getProductByName(productName);
+        return result != null;
+    }
+
     public ArrayList<Product> showProductAll(){
         ArrayList<Product> result = productDao.getProductAll();
         // null 처리

@@ -1,6 +1,5 @@
 package db;
 
-import model.ProdCategory;
 import model.Product;
 
 import java.sql.Connection;
@@ -58,6 +57,49 @@ public class ProductDao {
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
             preparedStatement.setString(1, productName);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                int prodId = result.getInt(1);
+                String prodName = result.getString(2);
+                int category = result.getInt(3);
+                String company = result.getString(4);
+                int price = result.getInt(5);
+                int expDate = result.getInt(6);
+                String isAdultOnly = result.getString(7);
+                return new Product(
+                        prodId,
+                        prodName,
+                        category,
+                        company,
+                        price,
+                        expDate,
+                        isAdultOnly
+                );
+            }
+            return null;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("close() 실패");
+            }
+        }
+        return null;
+    }
+
+    public Product getProductById(int productId){
+        final String select_sql = """
+                SELECT * FROM product\s
+                WHERE productId = ?
+                """;
+        Connection connection = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
+            preparedStatement.setInt(1, productId);
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
                 int prodId = result.getInt(1);

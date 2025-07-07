@@ -16,12 +16,12 @@ public class Main {
         ProductDao productDao = new ProductDao();
         StoreDao storeDao = new StoreDao();
         InventoryDao inventoryDao = new InventoryDao();
-        OrderDao orderDao = new OrderDao();
+        OrdersDao ordersDao = new OrdersDao();
 
         /* 서비스에 Dao 주입 */
         StaffService staffService = new StaffService(staffDao);
         ProductService productService = new ProductService(productDao);
-        StoreService storeService = new StoreService(productDao, storeDao, orderDao, inventoryDao, today);
+        StoreService storeService = new StoreService(productDao, storeDao, ordersDao, inventoryDao, today);
         Scanner scanner = new Scanner(System.in);
 
         boolean isLoggedIn = true;
@@ -47,8 +47,9 @@ public class Main {
                         break;
                     case 1:
                         new GetStockAll(scanner, storeService).run();
+                        break;
                     case 2:
-                        System.out.println("2");
+                        new SaleProduct(scanner, storeService).run();
                         break;
                     case 5:
                         new AddProduct(scanner, productService).run();
@@ -57,7 +58,7 @@ public class Main {
                         new GetProductAll(scanner, productService).run();
                         break;
                     case 7:
-                        new StockProduct(scanner, storeService).run();
+                        new AddStockProduct(scanner, storeService, productService).run();
                         break;
                 }
             } else {
