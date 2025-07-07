@@ -19,7 +19,6 @@ public class StaffDao {
                 """;
         Connection connection = null;
         try {
-            System.out.println(staffId);
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_sql);
             preparedStatement.setInt(1, staffId);

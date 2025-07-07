@@ -32,7 +32,6 @@ public class ProductDao {
             preparedStatement.setInt(6, product.expirationDate());
             preparedStatement.setString(7, product.isAdult());
             final int res = preparedStatement.executeUpdate();
-            System.out.println("Insert: " + res);
             preparedStatement.close();
             return res == 1;
 

@@ -4,11 +4,13 @@ import service.ProductService;
 import service.StaffService;
 import service.StoreService;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         ConnectionManager.driverLoad(); // 드라이버 로드
+        LocalDate today = LocalDate.now(); // 로컬데이트 로드
         /* Dao 객체 생성 */
         StaffDao staffDao = new StaffDao();
         ProductDao productDao = new ProductDao();
@@ -19,7 +21,7 @@ public class Main {
         /* 서비스에 Dao 주입 */
         StaffService staffService = new StaffService(staffDao);
         ProductService productService = new ProductService(productDao);
-        StoreService storeService = new StoreService(productDao, storeDao, orderDao, inventoryDao);
+        StoreService storeService = new StoreService(productDao, storeDao, orderDao, inventoryDao, today);
         Scanner scanner = new Scanner(System.in);
 
         boolean isLoggedIn = true;

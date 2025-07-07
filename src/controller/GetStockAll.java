@@ -1,6 +1,7 @@
 package controller;
 
 
+import model.InventoryCount;
 import model.InventoryDetail;
 import service.StoreService;
 
@@ -18,13 +19,15 @@ public class GetStockAll implements Controller {
 
     @Override
     public void run(){
-        ArrayList<InventoryDetail> res =  storeService.showStockList();
-        for (InventoryDetail i : res) {
-            System.out.println("=============");
-            System.out.println(i.inventoryId());
-            System.out.println(i.productName());
-            System.out.println(i.price());
-            System.out.println("=============");
+        ArrayList<InventoryCount> res =  storeService.checkStockCountList();
+        for (InventoryCount inv : res) {
+            System.out.print("[" + inv.productId() + "] ");
+            System.out.print(inv.productName() + ": ");
+            for (int i = 0; i < inv.totalEA(); i ++){
+                System.out.print("*");
+            }
+            System.out.println("(" + inv.totalEA() + " 개"+ ")");
+            System.out.println();
         }
     }
 }

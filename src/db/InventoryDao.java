@@ -1,6 +1,7 @@
 package db;
 
 import model.Inventory;
+import model.InventoryCount;
 import model.InventoryDetail;
 import model.Product;
 
@@ -8,31 +9,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class InventoryDao {
     Random rand = new Random();
 
-    LocalDate today = LocalDate.now();
-
-    public boolean insertInventory(int storeId, Product product) {
+    public boolean insertInventory(int storeId, Product product, String expDate) {
         int inventoryId = Math.abs(rand.nextInt());
         final String insert_sql = """
-            INSERT INTO inventory(inventoryId, storeId, productId, expirationDate)
-            VALUES(?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'))
+            INSERT INTO inventory(inventoryId, storeId, productId, expirationDate, status)
+            VALUES(?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?)
             """;
-        System.out.println("========" + inventoryId);
         Connection connection = null;
         try {
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_sql);
-            String expDate = String.valueOf(today.plusDays(product.expirationDate()));
             preparedStatement.setInt(1, inventoryId);
             preparedStatement.setInt(2, storeId);
             preparedStatement.setInt(3, product.productId());
             preparedStatement.setString(4, expDate);
+            preparedStatement.setString(5, "display");
             int result = preparedStatement.executeUpdate();
             preparedStatement.close();
             return result == 1;
@@ -90,6 +87,7 @@ public class InventoryDao {
                 );
                 inventoryDetails.add(detail);
             }
+            preparedStatement.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -124,6 +122,7 @@ public class InventoryDao {
                 );
                 inventories.add(inventory);
             }
+            preparedStatement.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -163,5 +162,46 @@ public class InventoryDao {
                 }
             }
         }
+    }
+
+
+    public ArrayList<InventoryCount> getInventoryCount(String status) {
+        ArrayList<InventoryCount> inventoryCounts = new ArrayList<>();
+        final String select_sql = """
+                SELECT p.productId, p.productName, COUNT(*) as count\s
+                FROM inventory i\s
+                JOIN product p\s
+                ON i.productid = p.productid\s
+                WHERE i.status = ?\s
+                GROUP BY p.productId, p.productName
+                """;
+        Connection connection = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(select_sql);
+            preparedStatement.setString(1, status);
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                InventoryCount inventoryCount = new InventoryCount(
+                    result.getInt(1),
+                    result.getString(2),
+                    result.getInt(3)
+                );
+                inventoryCounts.add(inventoryCount);
+            }
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (connection == null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("close() 실패" + e.getMessage());
+                }
+            }
+        }
+        return inventoryCounts;
     }
 }
