@@ -6,6 +6,10 @@ import model.Staff;
 public class StaffService {
     StaffDao staffDao = null; // 싱글톤
 
+    public StaffService(StaffDao staffDao) {
+        this.staffDao = staffDao;
+    }
+
     public String login(String id, String pw){
         Staff result = staffDao.getStaff(id, pw);
 
@@ -14,9 +18,5 @@ public class StaffService {
             return "";
         }
         return result.name();
-    }
-
-    public StaffService() {
-        staffDao = new StaffDao();
     }
 }

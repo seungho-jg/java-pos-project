@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class StaffDao {
-    static Random rand = new Random();
-    static int staffId = Math.abs(rand.nextInt());
+    Random rand = new Random();
 
     public boolean insertStaff(String id, String pw, String name) {
+        int staffId = Math.abs(rand.nextInt());
         final String insert_sql = """
                     INSERT INTO staff(staffId, accountId, accountPw, name)\s
                     VALUES(?, ?, ?, ?)

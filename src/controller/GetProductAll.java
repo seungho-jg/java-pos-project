@@ -7,11 +7,11 @@ import service.ProductService;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class getProductAll implements Controller {
+public class GetProductAll implements Controller {
     Scanner sc = null;
     ProductService productService = null;
 
-    public getProductAll(Scanner scanner, ProductService ps) {
+    public GetProductAll(Scanner scanner, ProductService ps) {
         sc = scanner;
         productService = ps;
     }
@@ -36,5 +36,7 @@ public class getProductAll implements Controller {
 
             System.out.println();
         }
+        System.out.print("아무키나 입력하세요: ");
+        sc.nextLine();
     };
 }

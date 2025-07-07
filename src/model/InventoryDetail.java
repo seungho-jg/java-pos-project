@@ -4,10 +4,10 @@ public record InventoryDetail(
         int inventoryId,
         int storeId,
         int productId,
-        int category,
-        int price,
         String productName,
+        int category,
         String company,
+        int price,
         String isAdult,
         String expirationDate
 ) {}

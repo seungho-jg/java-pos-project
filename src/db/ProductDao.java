@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ProductDao {
-    static Random rand = new Random();
-    static int productId = Math.abs(rand.nextInt());
+    Random rand = new Random();
 
     public boolean insertProduct(Product product) {
+        int productId = Math.abs(rand.nextInt());
         final String insert_sql = """
                     INSERT INTO product(productId, productName, category, company, price, expirationDate, isAdult)\s
                     VALUES(?, ?, ?, ?, ?, ?, ?)
