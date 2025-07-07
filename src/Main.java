@@ -33,10 +33,9 @@ public class Main {
         while (true) {
             if (isLoggedIn) {
                 System.out.println("== 메뉴선택 ==");
-                System.out.println("1. 매장제품조회"); // 매장에 있는 제품 조회
-                System.out.println("2. 매장제품판매");
+                System.out.println("1. 매장재고조회"); // 매장에 있는 제품 조회
+                System.out.println("2. 상품판매");
                 System.out.println("3. 잔고확인");
-                System.out.println("== 상품관련 ==");
                 System.out.println("5. 상품등록");
                 System.out.println("6. 상품목록");
                 System.out.println("7. 상품주문");  // 상품주문 -> inventory

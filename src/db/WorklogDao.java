@@ -14,7 +14,7 @@ public class WorklogDao {
     Random rand = new Random();
     // 근무시작
     public boolean insertWorkLog(int staffId, int storeId, Timestamp startDate) {
-        int orderId = Math.abs(rand.nextInt());
+        int workLogId = Math.abs(rand.nextInt());
         final String insert_sql = """
             INSERT INTO worklog(workLogId, staffId, storeId, startDate, endDate)
             VALUES(?, ?, ?, ?, null)
@@ -23,7 +23,7 @@ public class WorklogDao {
         try {
             connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_sql);
-            preparedStatement.setInt(1, staffId);
+            preparedStatement.setInt(1, workLogId);
             preparedStatement.setInt(2, staffId);
             preparedStatement.setInt(3, storeId);
             preparedStatement.setTimestamp(4, startDate);
