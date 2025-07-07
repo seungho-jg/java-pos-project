@@ -106,16 +106,17 @@ public class StoreService {
                 return 3;
             }
         }
-        boolean isSameProduct = false;
+        boolean addSameInven = false;
         for (Cart cart : cartList) {
             if (cart.getProductId() == product.productId()) {
                 cart.increaseQuantity();
-                isSameProduct = true;
+                addSameInven = true;
             }
         }
-        if (!isSameProduct) {
+        if (!addSameInven) {
             cartList.add(
                     new Cart(
+                            inventory.inventoryId(),
                             inventory.productId(),
                             product.name(),
                             product.price(),
@@ -123,19 +124,48 @@ public class StoreService {
                     )
             );
         }
+        // 전체 금액
+        int totalPrice = 0;
+        for (Cart cart : cartList) {
+            totalPrice += cart.getPrice() * cart.getQuantity();
+        }
 
+        // print cartList 나중에 분리
         System.out.print("[");
         for (Cart c : cartList) {
             System.out.print(c.getProductName()+ "x" + c.getQuantity() + " ");
         }
-        System.out.println("]");
+        System.out.println("] : " + totalPrice);
         return 1;
     }
 
 
     // 제품 판매
-    public OrderResult processSale(String method) {
+    public OrderResult processSale(String method, int cashAmount) {
+        // 카트에 아무것도 없을 때
+        if (cartList.isEmpty()) {
+            return new OrderResult("장바구니가 비어있습니다.");
+        }
+        // 전체 금액
+        int totalPrice = 0;
+        for (Cart cart : cartList) {
+            totalPrice += cart.getPrice() * cart.getQuantity();
+        }
+
         // 결제수단
+        if (method.equals("cash")) {
+            if (cashAmount < totalPrice) {
+                return new OrderResult("현금이 부족합니다.");
+            }
+            int change = cashAmount - totalPrice;
+            storeDao.increaseBalance(totalPrice);
+            System.out.printf("현금 결제 완료, 거스름돈: %,d원%n", change);
+        } else if (method.equals("card")) {
+            storeDao.increaseBalance(totalPrice);
+            System.out.printf("카드 결제 완료: %,d원%n", totalPrice);
+        } else {
+            return new OrderResult("결제수단 오류");
+        }
 
         for (Cart cart : cartList) {
             ordersDao.insertOrder(
@@ -147,12 +177,23 @@ public class StoreService {
                             method.equals("card") ? "1" : "0", // 0: cash, 1: cart
                             cart.getQuantity(),
                             "default"
-                    )
+                    ));
+            // 재고 차감
+            inventoryDao.updateInventoryStatus(cart.getInventoryId(), "sold");
+
+            // 장바구니 비우기
+            cartList.clear();
+
+            // 성공
+            Orders successOrder = new Orders(
+                    0, 0, 0, totalPrice,
+                    method.equals("card") ? "1" : "0",
+                    0,
+                    "default"
             );
+            return new OrderResult(successOrder);
         }
-        // store add balance
-        // Invetory remove
-        return null;
+        return new OrderResult("결제 실패");
     }
 
 

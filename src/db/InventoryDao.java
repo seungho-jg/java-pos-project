@@ -178,10 +178,38 @@ public class InventoryDao {
         return null;
     }
 
-    public boolean setInventoryStatusById(int inventoryId, String status) {
-        // 인벤토리 상태 업데이트 ( display / deliver / dispose / soldOut )
-        return false;
+    public boolean updateInventoryStatus(int inventoryId, String status) {
+        final String update_sql = """
+            UPDATE inventory
+            SET status = ?
+            WHERE inventoryId = ?
+        """;
+
+        Connection connection = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(update_sql);
+            preparedStatement.setString(1, status);
+            preparedStatement.setInt(2, inventoryId);
+
+            int result = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            return result == 1;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("close() 실패: " + e.getMessage());
+                }
+            }
+        }
     }
+
 
     public boolean deleteInventoryById(int inventoryId) {
         final String delete_sql = "DELETE FROM inventory WHERE inventoryId = ?";

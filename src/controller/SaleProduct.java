@@ -1,5 +1,6 @@
 package controller;
 
+import dto.OrderResult;
 import service.StoreService;
 
 import java.util.Scanner;
@@ -20,9 +21,18 @@ public class SaleProduct implements Controller{
             if (prodName.equals("0")) {
                 System.out.println("결제수단을 입력해주세요(cash/card): ");
                 String payMethod = scanner.nextLine();
-                System.out.println("계산중입니다..");
-                storeService.processSale(payMethod);
-                System.out.println("감사합니다.");
+
+                int cashAmount = 0;
+                if (payMethod.equals("cash")) {
+                    System.out.print("현금 얼마를 넣으시겠습니까?: ");
+                    cashAmount = Integer.parseInt(scanner.nextLine());
+                }
+                OrderResult result = storeService.processSale(payMethod, cashAmount);
+                if (result.isSuccess()) {
+                    System.out.println("결제가 완료되었습니다. 감사합니다!");
+                } else {
+                    System.out.println("오류: " + result.getErrorMsg());
+                }
                 break;
             }
             // 성공(1), 19세(2), 유통기한(3), 제품없음(4)
@@ -31,8 +41,7 @@ public class SaleProduct implements Controller{
                 case 2:
                     System.out.println("성인 인증이 필요합니다.");
                     System.out.print("주민번호 앞 6자리: ");
-                    // 나이 확인
-                    String yymmdd = scanner.nextLine();
+                    scanner.nextLine(); // 나이검증 나중에 구현
                     isAdult = true;
                     break;
                 case 3:
