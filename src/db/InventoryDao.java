@@ -30,7 +30,7 @@ public class InventoryDao {
             preparedStatement.setInt(2, storeId);
             preparedStatement.setInt(3, product.productId());
             preparedStatement.setString(4, expDate);
-            preparedStatement.setString(5, "display");
+            preparedStatement.setString(5, "shipping"); // 입고될 떄 바로 배송중 상태
             int result = preparedStatement.executeUpdate();
             preparedStatement.close();
             return result == 1;
