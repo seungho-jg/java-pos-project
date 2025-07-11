@@ -4,39 +4,46 @@ import dto.ProdCategory;
 import model.Product;
 import service.ProductService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class GetProductAll implements Controller {
-    Scanner sc = null;
-    ProductService productService = null;
+    private final BufferedReader reader;
+    private final ProductService productService;
 
-    public GetProductAll(Scanner scanner, ProductService ps) {
-        sc = scanner;
-        productService = ps;
+    public GetProductAll(BufferedReader reader, ProductService productService) {
+        this.reader = reader;
+        this.productService = productService;
     }
+
     @Override
     public void run() {
-        ArrayList<Product> result = productService.showProductAll();
-        if (result.isEmpty()) {
-            System.out.println("가져오기 실패");
-            return;
-        }
-        for (Product r : result) {
-            System.out.println();
-            System.out.println("ID : " + r.productId());
-            if(r.isAdult().equals("1")) {
-                System.out.println("[ 19세이하 제한품목 ]");
+        try {
+            ArrayList<Product> result = productService.showProductAll();
+            if (result.isEmpty()) {
+                System.out.println("가져오기 실패");
+                return;
             }
-            System.out.println("( " + ProdCategory.intToCategory(r.category()) + " )");
-            System.out.println("제품명   : " + r.name());
-            System.out.println("제조사   : " + r.company());
-            System.out.println("가격(원) : " + r.price());
-            System.out.println("유통기한 - " + r.expirationDate());
 
-            System.out.println();
+            for (Product r : result) {
+                System.out.println();
+                System.out.println("ID : " + r.productId());
+                if ("1".equals(r.isAdult())) {
+                    System.out.println("[ 19세이하 제한품목 ]");
+                }
+                System.out.println("( " + ProdCategory.intToCategory(r.category()) + " )");
+                System.out.println("제품명   : " + r.name());
+                System.out.println("제조사   : " + r.company());
+                System.out.println("가격(원) : " + r.price());
+                System.out.println("유통기한 - " + r.expirationDate());
+                System.out.println();
+            }
+
+            System.out.print("아무키나 입력하세요: ");
+            reader.readLine();
+        } catch (IOException e) {
+            System.out.println("입력 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
-        System.out.print("아무키나 입력하세요: ");
-        sc.nextLine();
-    };
+    }
 }

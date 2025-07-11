@@ -10,6 +10,8 @@ import model.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
 
 public class StoreService {
     LocalDate today;
@@ -89,9 +91,29 @@ public class StoreService {
 
     }
 
-
+    Random rand = new Random();
+    public static ArrayList<InventoryTuple> sleepList = new ArrayList<>();
+    public static long globalTick = 0;
+    // tick마다 슬립리스트 확인
+    public void checkSleepListAndWakeUp() {
+        Iterator<InventoryTuple> iterator = sleepList.iterator();
+        while (iterator.hasNext()) {
+            InventoryTuple tuple = iterator.next();
+            if (tuple.getOverLocalTick(globalTick)) {
+                System.out.printf("[깨움] inventoryId: %d at globalTick: %d\n", tuple.getInventoryId(), globalTick);
+                iterator.remove(); // 리스트에서 제거
+            }
+        }
+    }
+    // 슬립리스트에 넣기
+    public void addSleepInventory(int inventoryId, long localTick) {
+        sleepList.add(new InventoryTuple(inventoryId, localTick));
+        System.out.printf("[등록] inventoryId: %d / localTick: %d\n", inventoryId, localTick);
+    }
     // 물품 입고
     public void stockProduct(String productName, int quantity){
+        long tick = (long)(rand.nextDouble() * (6000 - 600)) + 600; // 600~6000 사이
+
         // 이름으로 product 검색
         Product findProd = productDao.getProductByName(productName);
         String expDate = null;
@@ -100,7 +122,9 @@ public class StoreService {
         }
 
         for (int i = 0; i < quantity; i++){
-            boolean result = inventoryDao.insertInventory(storeDao.getStoreId(), findProd, expDate);
+            int inventoryId = Math.abs(rand.nextInt());
+            addSleepInventory(inventoryId, tick + globalTick);
+            boolean result = inventoryDao.insertInventory(inventoryId, storeDao.getStoreId(), findProd, expDate);
             if (result) {
                 System.out.println("성공");
             } else {

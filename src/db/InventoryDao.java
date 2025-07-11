@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class InventoryDao {
-    Random rand = new Random();
 
-    public boolean insertInventory(int storeId, Product product, String expDate) {
-        int inventoryId = Math.abs(rand.nextInt());
+    public boolean insertInventory(int inventoryId, int storeId, Product product, String expDate) {
         final String insert_sql = """
             INSERT INTO inventory(inventoryId, storeId, productId, expirationDate, status)
             VALUES(?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?)
